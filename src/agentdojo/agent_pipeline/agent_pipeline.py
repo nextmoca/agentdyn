@@ -26,6 +26,7 @@ from agentdojo.agent_pipeline.llms.google_llm import GoogleLLM
 from agentdojo.agent_pipeline.llms.local_llm import LocalLLM
 from agentdojo.agent_pipeline.llms.openai_llm import OpenAILLM, OpenAILLMToolFilter
 from agentdojo.agent_pipeline.llms.prompting_llm import PromptingLLM
+from agentdojo.agent_pipeline.next_moca import NextMocaDefense
 from agentdojo.agent_pipeline.pi_detector import TransformersBasedPIDetector
 from agentdojo.agent_pipeline.tool_execution import (
     ToolsExecutionLoop,
@@ -44,6 +45,7 @@ TOOL_FILTER_PROMPT = (
 )
 
 DEFENSES = [
+    "next_moca",
     "tool_filter",
     "transformers_pi_detector",
     "piguard_detector",
@@ -587,6 +589,12 @@ class AgentPipeline(BasePipelineElement):
                 llm,
                 tools_loop,
             ])
+            pipeline.name = f"{llm_name}-{config.defense}"
+            return pipeline
+        if config.defense == "next_moca":
+            # Hosted selection hop over each tool-result batch; same slot as the r8 fork.
+            tools_loop = ToolsExecutionLoop([ToolsExecutor(tool_output_formatter), NextMocaDefense(), llm])
+            pipeline = cls([system_message_component, init_query_component, llm, tools_loop])
             pipeline.name = f"{llm_name}-{config.defense}"
             return pipeline
         if config.defense == "tool_filter":
