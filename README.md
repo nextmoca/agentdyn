@@ -1,3 +1,19 @@
+## About this branch (`next-moca`)
+
+This is the `next-moca` branch of `nextmoca/agentdyn`, a fork of [SaFo-Lab/AgentDyn](https://github.com/SaFo-Lab/AgentDyn). `main` mirrors upstream unchanged.
+
+What this branch adds, on top of upstream commit `5353cf76`:
+
+- A `next_moca` defense (`src/agentdojo/agent_pipeline/next_moca.py`, wired in `agent_pipeline.py`). The element is copied unchanged from [nextmoca/agentdojo](https://github.com/nextmoca/agentdojo/tree/next-moca). It sits after the tool executor, sends each batch of tool results to the hosted Next Moca service, and passes on the context the service returns. On a timeout, an HTTP error, a malformed response or a server pass-through directive, the model sees the original tool output unchanged. The element is transport only: it does not score, rank or rewrite tool output itself.
+
+This branch is the code behind the published GPT-4o AgentDyn result (`shopping`, `github` and `dailylife`, `important_instructions`, 560 attacked tasks per arm, November 2026). Results, run configuration and reproduction steps are in [context-selection-bench](https://github.com/nextmoca/context-selection-bench), under `csbench/suites/agentdyn`.
+
+To run the defense: set `NEXT_MOCA_API_KEY` (and optionally `NEXT_MOCA_URL`, `NEXT_MOCA_OPERATING_POINT`), then pass `--defense next_moca` to `python -m agentdojo.scripts.benchmark`.
+
+AgentDyn is the work of Hao Li, Ruoyao Wen, Shanghao Shi, Ning Zhang, Yevgeniy Vorobeychik and Chaowei Xiao, built on AgentDojo, and released under the MIT License (see `LICENSE`). Please cite their paper, below, when you use the benchmark.
+
+---
+
 # AgentDyn: Are Your Agent Security Defenses Deployable in Real-World Dynamic Environments?
 
 [Hao Li](https://leolee99.github.io/), [Ruoyao Wen](https://github.com/ruoyaow/), [Shanghao Shi](https://shishishi123.github.io/), [Ning Zhang](https://cybersecurity.seas.wustl.edu/index.html), [Yevgeniy Vorobeychik](https://vorobeychik.com/), [Chaowei Xiao](https://xiaocw11.github.io/).
